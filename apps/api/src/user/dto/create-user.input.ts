@@ -17,5 +17,4 @@ export class CreateUserInput {
   bio?: string;
   @Field({ nullable: true })
   avatar?: string;
-
 }
