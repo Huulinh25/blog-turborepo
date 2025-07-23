@@ -9,6 +9,6 @@ export class AuthResolver {
   @Mutation(() => String)
   async signIn (@Args("signInInput") sinInInput: SignInInput){
     const user = await this.authService.validateLocalUser(sinInInput);
-    return "Successfully login!";
+    return await this.authService.login(user);
   }
 }
