@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +56,6 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('User not found');
     const currentUser = { id: user.id };
-
     return currentUser;
   }
 }
