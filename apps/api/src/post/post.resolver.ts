@@ -12,10 +12,18 @@ export class PostResolver {
 
   // @UseGuards(JwtAuthGuard)
   @Query(() => [Post], { name: 'posts' })
-  findAll(@Context() context) {
+  findAll(@Context() context,
+    @Args("skip", {nullable: true}) skip ?: number,
+    @Args("take", {nullable: true}) take ?: number)
+  {
     const user = context.req.user;
     console.log({ user });
-    return this.postService.findAll();
+    return this.postService.findAll({ skip, take });
+  }
+
+  @Query(() => Int, { name: 'postCount' })
+  count() {
+    return this.postService.count();
   }
 
 }
