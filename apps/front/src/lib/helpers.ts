@@ -22,17 +22,17 @@ export function calculatePageNumbers({
   totalPages: number;
   currentPage: number;
 }) {
-  if (totalPages <= 0) return [];
-  const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
   const totalNumbers = pageNeighbors * 2 + 3;
   const totalBlocks = totalNumbers + 2;
 
   if (totalPages > totalBlocks) {
-    const startPage = Math.max(2, validCurrentPage - pageNeighbors);
-    const endPage = Math.min(totalPages - 1, validCurrentPage + pageNeighbors);
+    const startPage = Math.max(2, currentPage - pageNeighbors);
+    const endPage = Math.min(totalPages - 1, currentPage + pageNeighbors);
 
     let pages: (number | string)[] = Array.from(
-      { length: endPage - startPage + 1 },
+      {
+        length: endPage - startPage + 1,
+      },
       (_, i) => startPage + i
     );
     if (startPage > 2) pages = ["...", ...pages];
