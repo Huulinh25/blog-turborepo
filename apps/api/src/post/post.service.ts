@@ -23,4 +23,14 @@ export class PostService {
   async count() {
     return await this.prisma.post.count();
   }
+
+  async findOne(id: number) {
+    return this.prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        tags: true,
+      }
+    });
+  }
 }

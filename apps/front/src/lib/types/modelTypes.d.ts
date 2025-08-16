@@ -2,9 +2,9 @@ export type Post = {
     id: number;
     title: string;
     slug: string;
-    author: string;
+    author: User;
     content: string;
-    thumbnail: string;
+    thumbnail: string | null;
     publish: boolean;
     authorId: number;
     tags?: Tag[];
@@ -19,7 +19,7 @@ export type User = {
     bio: string | null;
     avatar?: string;
     createdAt: Date;
-    updatedAt: string;
+    updatedAt: Date;
 }
 
 export type Tag = {
@@ -27,7 +27,7 @@ export type Tag = {
     name: string;
 }
 
-export type CommentModel = {
+export type CommentEntity = {
     id: number;
     content: string;
     post: Post;
