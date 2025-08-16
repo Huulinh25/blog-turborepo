@@ -1,8 +1,11 @@
+import { getSession } from "@/lib/session";
 import Link from "next/link";
+import SignInPanel from "./signInPanel";
 
 type Props = {};
 
-const Navbar = (props: Props) => {
+const Navbar = async (props: Props) => {
+  const session = await getSession();
   return (
     <>
       <h1 className="text-2xl font-bold p-2">My Modern Blog</h1>
@@ -17,6 +20,11 @@ const Navbar = (props: Props) => {
         <Link href="/contact" className="hover:text-gray-900 transition-colors">
           Contact
         </Link>
+        {session && session.user ? (
+          <a href={"/api/auth/signout"}>Sign Out</a>
+        ) : (
+          <SignInPanel />
+        )}
       </div>
     </>
   );
