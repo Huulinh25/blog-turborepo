@@ -7,6 +7,8 @@ import { print } from "graphql";
 import { CREATE_USER_MUTATION, SIGN_IN_MUTATION } from "../gqlQueries";
 import { redirect } from "next/navigation";
 import { LoginFormSchema } from "../ZodSchemas/loginFormSchema";
+import { createSession } from "../session";
+import { revalidatePath } from "next/cache";
 
 export async function signUp(
   state: SignUpFormState,
@@ -63,5 +65,24 @@ export async function signIn(
       message: "Invalid Credentials",
     };
   }
+  // Todo: create a session
+  await createSession({
+    user: {
+      id: data.signIn.id,
+      name: data.signIn.name,
+      avatar: data.signIn.avatar,
+    },
+    accessToken: data.signIn.accessToken,
+  });
+  // Todo: create a session   
+  await createSession({
+    user: {
+      id: data.signIn.id,
+      name: data.signIn.name,
+      avatar: data.signIn.avatar,
+    },
+    accessToken: data.signIn.accessToken,
+  })
+  revalidatePath("/");
   redirect("/");
 }
