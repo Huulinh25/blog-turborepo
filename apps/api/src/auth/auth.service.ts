@@ -5,6 +5,7 @@ import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
 import { User } from '@prisma/client';
+import { CreateUserInput } from 'src/user/dto/create-user.input';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +21,11 @@ export class AuthService {
       },
     });
 
-    if (!user) throw new UnauthorizedException('User not found');
+    if (!user) throw new UnauthorizedException('User Not Found');
 
-    const passswordMatches = await verify(user.password, password);
+    const passwordMatched = await verify(user.password, password);
 
-    if (!passswordMatches)
+    if (!passwordMatched)
       throw new UnauthorizedException('Invalid Credentials!');
 
     return user;
@@ -33,12 +34,11 @@ export class AuthService {
   async generateToken(userId: number) {
     const payload: AuthJwtPayload = { sub: userId };
     const accessToken = await this.jwtService.signAsync(payload);
-    return accessToken;
+    return { accessToken };
   }
 
   async login(user: User) {
-    const accessToken = await this.generateToken(user.id);
-
+    const { accessToken } = await this.generateToken(user.id);
     return {
       id: user.id,
       name: user.name,
@@ -54,8 +54,28 @@ export class AuthService {
       },
     });
 
-    if (!user) throw new UnauthorizedException('User not found');
+    if (!user) throw new UnauthorizedException('User not found!');
     const currentUser = { id: user.id };
     return currentUser;
+  }
+
+  async validateGoogleUser(googleUser: CreateUserInput) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: googleUser.email,
+      },
+    });
+    if (user) {
+      const { password, ...authUser } = user;
+      return authUser;
+    }
+
+    const dbUser = await this.prisma.user.create({
+      data: {
+        ...googleUser,
+      },
+    });
+    const { password, ...authUser } = dbUser;
+    authUser;
   }
 }
