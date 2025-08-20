@@ -2,6 +2,7 @@ import { fetchPostById } from "@/lib/actions/postActions";
 import Image from "next/image";
 import DOMPurity from "dompurify";
 import SanitizedContent from "./_components/SanitizedContent";
+import Comments from "./_components/comments";
 
 
 type Props = {
@@ -35,6 +36,7 @@ const PostPage = async ({ params }: Props) => {
       />
 
       {/* Todo: Put the Post Comments Here */}
+      <Comments postId={post.id} />
     </main>
   );
 };

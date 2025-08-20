@@ -22,6 +22,6 @@ export const fetchPosts = async ({
 
 export const fetchPostById = async (id: number) => {
   const data = await fetchGraphQL(print(GET_POST_BY_ID), { id });
-  console.log("Fetched post data:", data.getPostById); // Debug log
+  // console.log("Fetched post data:", data.getPostById);
   return data.getPostById as Post;
 };

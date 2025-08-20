@@ -1,14 +1,12 @@
 "use client";
 
-import DOMPurity from "dompurify";
-
+import DOMPurify from "dompurify";
 type Props = {
   content: string;
   className?: string;
 };
-
 const SanitizedContent = (props: Props) => {
-  const cleanHtml = DOMPurity.sanitize(props.content);
+  // const cleanHtml = DOMPurify.sanitize(props.content);
 
   return (
     <div
@@ -17,4 +15,5 @@ const SanitizedContent = (props: Props) => {
     />
   );
 };
+
 export default SanitizedContent;
