@@ -3,6 +3,7 @@ import Image from "next/image";
 import DOMPurity from "dompurify";
 import SanitizedContent from "./_components/SanitizedContent";
 import Comments from "./_components/comments";
+import { getSession } from "@/lib/session";
 
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 const PostPage = async ({ params }: Props) => {
   const postId = (await params).id;
   const post = await fetchPostById(+postId);
+  const session = await getSession();
 
   return (
     <main className="container mx-auto px-4 py-8 mt-16">
@@ -36,7 +38,7 @@ const PostPage = async ({ params }: Props) => {
       />
 
       {/* Todo: Put the Post Comments Here */}
-      <Comments postId={post.id} />
+      <Comments user={session?.user} postId={post.id} />
     </main>
   );
 };

@@ -7,6 +7,7 @@ const CommentCardSkeleton = () => {
                 <Skeleton className="rounded-full w-12 h-12" />
                 <Skeleton className="w-24 h-4" />
             </div>
+            <Skeleton className="h-8 w-96" />
         </div>
     );
 }

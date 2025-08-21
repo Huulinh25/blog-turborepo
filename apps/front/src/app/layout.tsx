@@ -5,6 +5,7 @@ import DesktopNavbar from "@/components/desktopNavbar";
 import Navbar from "@/components/navbar";
 import NavbarContainer from "@/components/NavbarContainer";
 import Providers from "./providers";
+import { Toaster } from "sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
             <Navbar />
           </NavbarContainer>
           {children}
+          <Toaster />
         </Providers>
       </body>
     </html>
