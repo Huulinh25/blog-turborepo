@@ -73,6 +73,7 @@ type Query {
 type Mutation {
   createPost(createPostInput: CreatePostInput!): Post!
   updatePost(updatePostInput: UpdatePostInput!): Post!
+  deletePost(postId: Int!): Boolean!
   likePost(postId: Int!): Boolean!
   unlikePost(postId: Int!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!

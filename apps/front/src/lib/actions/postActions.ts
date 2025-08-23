@@ -4,7 +4,7 @@ import { print } from "graphql";
 import { authFetchGraphQL, fetchGraphQL } from "../fetchGraphQL";
 import {
   CREATE_POST_MUTATION,
-  // DELETE_POST_MUTATION,
+  DELETE_POST_MUTATION,
   GET_POST_BY_ID,
   GET_POSTS,
   GET_USER_POSTS,
@@ -74,9 +74,11 @@ export async function saveNewPost(
 
   // Todo: call garphql api
 
+  const { postId, ...cleanData } = validatedFields.data;
+
   const data = await authFetchGraphQL(print(CREATE_POST_MUTATION), {
     input: {
-      ...validatedFields.data,
+      ...cleanData,
       thumbnail: thumbnailUrl,
     },
   });
@@ -123,10 +125,10 @@ export async function updatePost(
   };
 }
 
-// export async function deletePost(postId: number) {
-//   const data = await authFetchGraphQL(print(DELETE_POST_MUTATION), {
-//     postId,
-//   });
+export async function deletePost(postId: number) {
+  const data = await authFetchGraphQL(print(DELETE_POST_MUTATION), {
+    postId,
+  });
 
-//   return data.deletePost;
-// }
+  return data.deletePost;
+}

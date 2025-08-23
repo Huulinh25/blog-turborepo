@@ -132,6 +132,20 @@ export class PostService {
     });
   }
   
+  async delete({ postId, userId }: { postId: number; userId: number }) {
+    const authorIdMatched = await this.prisma.post.findUnique({
+      where: { id: postId, authorId: userId },
+    });
 
-  
+    if (!authorIdMatched) throw new UnauthorizedException();
+
+    const result = await this.prisma.post.delete({
+      where: {
+        id: postId,
+        authorId: userId,
+      },
+    });
+
+    return !!result;
+  }
 }
