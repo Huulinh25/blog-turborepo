@@ -33,4 +33,47 @@ export class PostService {
       }
     });
   }
+
+  async findByUser({
+    userId,
+    skip,
+    take,
+  }: {
+    userId: number;
+    skip: number;
+    take: number;
+  }) {
+    return await this.prisma.post.findMany({
+      where: {
+        author: {
+          id: userId,
+        },
+      },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        published: true,
+        slug: true,
+        title: true,
+        thumbnail: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
+      take,
+      skip,
+    });
+  }
+
+  async userPostCount(userId: number) {
+    return this.prisma.post.count({
+      where: {
+        authorId: userId,
+      },
+    });
+  }
 }
