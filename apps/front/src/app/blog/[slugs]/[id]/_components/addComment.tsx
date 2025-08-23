@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { Dialog } from "@radix-ui/react-dialog";
 import { RefetchOptions, QueryObserverResult } from "@tanstack/react-query";
 import { useActionState, useEffect } from "react";
-import { toast } from "sonner";   // ✅ thay thế
+import { toast } from "sonner";
 
 type Props = {
   postId: number;
@@ -39,7 +39,7 @@ const AddComment = (props: Props) => {
   useEffect(() => {
     if (state?.message) {
       if (state?.ok) {
-        toast.success(state.message); // ✅ sonner API
+        toast.success(state.message);
         props.refetch();
       } else {
         toast.error(state.message);
