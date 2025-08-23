@@ -1,5 +1,5 @@
-// import CreatePostContainer from "./_components/CreatePostContainer";
 import CreatePostContainer from "./_components/CreatePostContainer";
+import UpsertPostForm from "./_components/upsertPostForm";
 
 const CreatePostPage = () => {
   return (
@@ -7,7 +7,7 @@ const CreatePostPage = () => {
       <h2 className="text-lg text-center font-bold text-slate-700">
         Create a New Post
       </h2>
-      <CreatePostContainer  />
+      <CreatePostContainer />
     </div>
   );
 };

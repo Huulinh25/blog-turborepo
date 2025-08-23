@@ -1,7 +1,7 @@
 import { Post } from "@/lib/types/modelTypes";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import PostActions from "./PostActions";
+import PostActions from "./postActions";
 type Props = {
   post: Post;
 };

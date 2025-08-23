@@ -22,6 +22,7 @@ query getPostById($id: Int!) {
         thumbnail
         content
         createdAt
+        published
         slug
         author {
             name
@@ -117,6 +118,14 @@ export const GET_USER_POSTS = gql`
 export const CREATE_POST_MUTATION = gql`
   mutation CreatePostMutation($input: CreatePostInput!) {
     createPost(createPostInput: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_POST_MUTATION = gql`
+  mutation UpdatePost($input: UpdatePostInput!) {
+    updatePost(updatePostInput: $input) {
       id
     }
   }
