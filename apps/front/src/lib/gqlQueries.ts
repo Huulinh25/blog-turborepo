@@ -136,3 +136,12 @@ export const DELETE_POST_MUTATION = gql`
     deletePost(postId: $postId)
   }
 `;
+
+export const GET_TAGS = gql`
+  query Tags {
+    tags {
+      id
+      name
+    }
+  }
+`;

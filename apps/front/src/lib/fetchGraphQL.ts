@@ -16,7 +16,7 @@ export const fetchGraphQL = async (query: string, variables = {}) => {
 
   if (result.errors) {
     console.error("GraphQL errors:", result.errors);
-    throw new Error(result.errors[0]?.message || "Failed to fetch data from GraphQL");
+    return { errors: result.errors };
   }
 
   return result.data;
@@ -43,4 +43,18 @@ export const authFetchGraphQL = async (query: string, variables = {}) => {
   }
 
   return result.data;
+};
+
+// Hàm để lấy tags của người dùng
+export const fetchUserTags = async (): Promise<string[]> => {
+  const GET_USER_TAGS = `
+    query GetUserTags {
+      tags {
+        id
+        name
+      }
+    }
+  `;
+  const data = await authFetchGraphQL(GET_USER_TAGS);
+  return data.tags.map((tag: { name: string }) => tag.name);
 };

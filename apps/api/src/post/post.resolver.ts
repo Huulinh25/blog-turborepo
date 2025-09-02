@@ -6,10 +6,18 @@ import { UpdatePostInput } from './dto/update-post.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { DEFAULT_PAGE_SIZE } from 'src/constants';
+import { Tag } from 'src/tag/entities/tag.entity';
 
 @Resolver(() => Post)
 export class PostResolver {
   constructor(private readonly postService: PostService) {}
+  
+  @Query(() => [Tag], { name: 'tags' })
+  @UseGuards(JwtAuthGuard)
+  async getAllTags(@Context() context) {
+    const userId = context.req.user.id;
+    return this.postService.getAllTags(userId);
+  }
 
   // @UseGuards(JwtAuthGuard)
   @Query(() => [Post], { name: 'posts' })

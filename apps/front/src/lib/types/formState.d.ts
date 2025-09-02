@@ -50,6 +50,7 @@ export type CreateCommentFormState =
       };
       message?: string;
       ok?: boolean;
+      userTags?: string[] | undefined;
     }
   | undefined;
 

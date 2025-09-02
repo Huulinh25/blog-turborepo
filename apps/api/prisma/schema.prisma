@@ -22,8 +22,17 @@ model User {
   updatedAt DateTime @updatedAt
   posts     Post[]
   comments  Comment[]
-
+  roleId    Int?
+  role      Role?    @relation(fields: [roleId], references: [id])
   likes Like[]
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Post {

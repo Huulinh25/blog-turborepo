@@ -148,4 +148,20 @@ export class PostService {
 
     return !!result;
   }
+
+  async getAllTags(userId: number) {
+    return await this.prisma.tag.findMany({
+      where: {
+        posts: {
+          some: {
+            authorId: userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
 }

@@ -59,6 +59,7 @@ type AuthPayload {
 }
 
 type Query {
+  tags: [Tag!]!
   posts(skip: Float, take: Float): [Post!]!
   postCount: Int!
   getPostById(id: Int!): Post!

@@ -1,7 +1,7 @@
 "use server";
 
 import { print } from "graphql";
-import { authFetchGraphQL, fetchGraphQL } from "../fetchGraphQL";
+import { authFetchGraphQL, fetchGraphQL, fetchUserTags } from "../fetchGraphQL";
 import {
   CREATE_POST_MUTATION,
   DELETE_POST_MUTATION,
@@ -15,6 +15,18 @@ import { Post } from "../types/modelTypes";
 import { PostFormState } from "../types/formState";
 import { uploadThumbnail } from "../upload";
 import { PostFormSchema } from "../ZodSchemas/postFornSchema";
+
+// Hàm lấy tags độc lập
+export async function getUserTags() {
+  try {
+    const tags = await fetchUserTags();
+    console.log("User tags fetched from server action:", tags); // In ra console
+    return tags;
+  } catch (error) {
+    console.error("Error fetching user tags in server action:", error);
+    return [];
+  }
+}
 
 export const fetchPosts = async ({
   page,
@@ -62,32 +74,66 @@ export async function saveNewPost(
     Object.fromEntries(formData.entries())
   );
 
-  if (!validatedFields.success)
+  if (!validatedFields.success) {
     return {
       data: Object.fromEntries(formData.entries()),
       errors: validatedFields.error.flatten().fieldErrors,
+      ok: false,
     };
+  }
+
   let thumbnailUrl = "";
-  // Todo:Upload Thumbnail to supabase
   if (validatedFields.data.thumbnail)
     thumbnailUrl = await uploadThumbnail(validatedFields.data.thumbnail);
 
-  // Todo: call garphql api
-
   const { postId, ...cleanData } = validatedFields.data;
+  const tags = formData.get("tags")?.toString().split(",") || [];
 
-  const data = await authFetchGraphQL(print(CREATE_POST_MUTATION), {
-    input: {
-      ...cleanData,
-      thumbnail: thumbnailUrl,
-    },
-  });
+  try {
+    const userTags = await fetchUserTags();
+    console.log("Fetched userTags from server:", userTags);
+    if (!userTags || userTags.length === 0) {
+      console.warn("No tags fetched from server");
+    }
+    const mutation = print(CREATE_POST_MUTATION);
+    const variables = {
+      input: {
+        ...cleanData,
+        thumbnail: thumbnailUrl,
+        tags,
+      },
+    };
 
-  if (data) return { message: "Success! New Post Saved", ok: true };
-  return {
-    message: "Oops, Something Went Wrong",
-    data: Object.fromEntries(formData.entries()),
-  };
+    const data = await authFetchGraphQL(mutation, variables);
+
+    if (!data?.createPost) {
+      return {
+        data: Object.fromEntries(formData.entries()),
+        message: "Failed to create post",
+        ok: false,
+        userTags,
+      };
+    }
+
+    return {
+      data: Object.fromEntries(formData.entries()),
+      message: "Post created successfully",
+      ok: true,
+      userTags,
+    };
+  } catch (error) {
+    console.error("Error fetching tags or creating post:", error);
+    let errorMessage = "An unexpected error occurred";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return {
+      data: Object.fromEntries(formData.entries()),
+      message: errorMessage,
+      ok: false,
+      userTags: [],
+    };
+  }
 }
 
 export async function updatePost(
@@ -98,31 +144,47 @@ export async function updatePost(
     Object.fromEntries(formData.entries())
   );
 
-  if (!validatedFields.success)
+  if (!validatedFields.success) {
     return {
       data: Object.fromEntries(formData.entries()),
       errors: validatedFields.error.flatten().fieldErrors,
     };
+  }
 
-  // Todo: check if thumbnail has been changed
   const { thumbnail, ...inputs } = validatedFields.data;
-
   let thumbnailUrl = "";
-  // Todo:Upload Thumbnail to supabase
   if (thumbnail) thumbnailUrl = await uploadThumbnail(thumbnail);
 
-  const data = await authFetchGraphQL(print(UPDATE_POST_MUTATION), {
-    input: {
-      ...inputs,
-      ...(thumbnailUrl && { thumbnail: thumbnailUrl }),
-    },
-  });
+  try {
+    const userTags = await fetchUserTags();
+    console.log("Fetched userTags for update:", userTags);
+    const data = await authFetchGraphQL(print(UPDATE_POST_MUTATION), {
+      input: {
+        ...inputs,
+        ...(thumbnailUrl && { thumbnail: thumbnailUrl }),
+      },
+    });
 
-  if (data) return { message: "Success! The Post Updated", ok: true };
-  return {
-    message: "Oops, Something Went Wrong",
-    data: Object.fromEntries(formData.entries()),
-  };
+    if (data) {
+      return {
+        message: "Success! The Post Updated",
+        ok: true,
+        userTags,
+      };
+    }
+    return {
+      message: "Oops, Something Went Wrong",
+      data: Object.fromEntries(formData.entries()),
+      userTags,
+    };
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return {
+      message: "An unexpected error occurred",
+      data: Object.fromEntries(formData.entries()),
+      userTags: [],
+    };
+  }
 }
 
 export async function deletePost(postId: number) {
