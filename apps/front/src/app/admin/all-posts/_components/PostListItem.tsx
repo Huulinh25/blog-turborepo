@@ -1,10 +1,12 @@
+import PostActions from "@/app/user/posts/_components/postActions";
 import { Post } from "@/lib/types/modelTypes";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import PostActions from "./postActions";
+
 type Props = {
   post: Post;
 };
+
 const PostListItem = ({ post }: Props) => {
   return (
     <div className="grid grid-cols-8 m-2 rounded-md overflow-hidden border shadow hover:scale-[101%] transition text-center bg-white">
@@ -13,19 +15,14 @@ const PostListItem = ({ post }: Props) => {
           src={post.thumbnail || "/no-image.png"}
           alt={post.title}
           fill
-          sizes="(max-width: 768px) 100vw, 
-         (max-width: 1200px) 50vw, 
-         33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
         />
       </div>
       <div className="flex flex-col gap-2 col-span-2">
         <p className="text-lg line-clamp-1 px-2 text-slate-700">{post.title}</p>
-        <p className="text-sm line-clamp-3 px-1  text-slate-500">
-          {post.content}
-        </p>
+        <p className="text-sm line-clamp-3 px-1 text-slate-500">{post.content}</p>
       </div>
-
       <p className="flex justify-center items-center">
         {new Date(post.createdAt).toLocaleDateString()}
       </p>
@@ -33,11 +30,10 @@ const PostListItem = ({ post }: Props) => {
         {post.published && <CheckIcon className="w-5" />}
       </div>
       <div className="flex justify-center items-center">
-        {post._count.likes}
+        {post._count?.likes ?? 0}
       </div>
-
       <div className="flex justify-center items-center">
-        {post._count.comments}
+        {post._count?.comments ?? 0}
       </div>
       <PostActions postId={post.id} />
     </div>

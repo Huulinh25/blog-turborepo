@@ -1,38 +1,43 @@
-import { gql } from 'graphql-tag';
+import { gql } from "graphql-tag";
 
 export const GET_POSTS = gql`
-query posts($skip: Float, $take: Float) {
+  query posts($skip: Float, $take: Float) {
     posts(skip: $skip, take: $take) {
-        id
-        title
-        thumbnail
-        content
-        createdAt
-        slug
+      id
+      title
+      thumbnail
+      content
+      createdAt
+      slug
+      _count {
+        likes
+        comments
+      }
     }
     postCount
-}
+  }
 `;
 
 export const GET_POST_BY_ID = gql`
-query getPostById($id: Int!) {
+  query getPostById($id: Int!) {
     getPostById(id: $id) {
+      id
+      title
+      thumbnail
+      content
+      createdAt
+      published
+      slug
+      author {
+        name
+      }
+      tags {
         id
-        title
-        thumbnail
-        content
-        createdAt
-        published
-        slug
-        author {
-            name
-        }
-        tags {
-            id
-            name
-        }
+        name
+      }
     }
-}`;
+  }
+`;
 
 export const CREATE_USER_MUTATION = gql`
   mutation createUser($input: CreateUserInput!) {
@@ -48,6 +53,10 @@ export const SIGN_IN_MUTATION = gql`
       id
       name
       avatar
+      role {
+        id
+        name
+      }
       accessToken
     }
   }

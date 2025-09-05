@@ -65,24 +65,20 @@ export async function signIn(
       message: "Invalid Credentials",
     };
   }
-  // Todo: create a session
+
+  // console.log('SignIn responseeeeeeeeeeeee:', data);
+
   await createSession({
     user: {
-      id: data.signIn.id,
+      id: data.signIn.id.toString(),
       name: data.signIn.name,
       avatar: data.signIn.avatar,
+      roleId: data.signIn.role?.id,
+      roleName: data.signIn.role?.name,
     },
     accessToken: data.signIn.accessToken,
   });
-  // Todo: create a session   
-  await createSession({
-    user: {
-      id: data.signIn.id,
-      name: data.signIn.name,
-      avatar: data.signIn.avatar,
-    },
-    accessToken: data.signIn.accessToken,
-  })
+
   revalidatePath("/");
   redirect("/");
 }

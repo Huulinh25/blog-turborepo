@@ -15,12 +15,13 @@ import { Post } from "../types/modelTypes";
 import { PostFormState } from "../types/formState";
 import { uploadThumbnail } from "../upload";
 import { PostFormSchema } from "../ZodSchemas/postFornSchema";
+import { DEFAULT_PAGE_SIZE } from "../constants";
 
 // Hàm lấy tags độc lập
 export async function getUserTags() {
   try {
     const tags = await fetchUserTags();
-    console.log("User tags fetched from server action:", tags); // In ra console
+    // console.log("User tags fetched from server action:", tags); // In ra console
     return tags;
   } catch (error) {
     console.error("Error fetching user tags in server action:", error);
@@ -34,9 +35,14 @@ export const fetchPosts = async ({
 }: {
   page?: number;
   pageSize?: number;
-}) => {
-  const { skip, take } = transformTakeSkip({ page, pageSize });
+} = {}): Promise<{ posts: Post[]; totalPosts: any }> => {
+  const effectivePage = page || 1;
+  const effectivePageSize = pageSize || 10;
+  const { skip, take } = transformTakeSkip({ page: effectivePage, pageSize: effectivePageSize });
+
+  console.log('Fetch posts params:', { skip, take }); // Debug
   const data = await fetchGraphQL(print(GET_POSTS), { skip, take });
+  console.log('Fetch posts data:', data); // Debug
 
   return { posts: data.posts as Post[], totalPosts: data.postCount };
 };

@@ -29,7 +29,7 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
     const loadUserTags = async () => {
       const tags = await getUserTags();
       if (tags.length > 0) {
-        console.log("User tags fetched from server action:", tags);
+        // console.log("User tags fetched from server action:", tags);
         setAllTags(tags); // Lưu tất cả tags vào state
       } else {
         console.warn("No tags fetched for the user");
@@ -48,7 +48,6 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
     if (state?.data?.tags) {
       const tags = state.data.tags.split(",");
       setSelectedTags(tags);
-      console.log("Previous post tags from state:", tags);
     }
   }, [state]);
 

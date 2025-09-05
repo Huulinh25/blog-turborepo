@@ -15,7 +15,7 @@ export async function uploadThumbnail(image: File) {
     .upload(filePath, image, {
       cacheControl: "3600",
       upsert: false,
-      contentType: image.type || "image/png", // 👈 fix contentType
+      contentType: image.type || "image/png",
     });
 
   if (error) {

@@ -39,11 +39,19 @@ export class AuthService {
 
   async login(user: User) {
     const { accessToken } = await this.generateToken(user.id);
+
+    const userWithRole = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: { role: true },
+    });
+
+    // console.log('User with role in login:', userWithRole);
     return {
       id: user.id,
       name: user.name,
       avatar: user.avatar,
       accessToken,
+      role: userWithRole?.role ? { id: userWithRole.role.id, name: userWithRole.role.name } : null,
     };
   }
 
@@ -76,6 +84,6 @@ export class AuthService {
       },
     });
     const { password, ...authUser } = dbUser;
-    authUser;
+    return authUser;
   }
 }

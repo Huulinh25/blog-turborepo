@@ -7,6 +7,8 @@ export type SessionUser = {
   id?: string;
   name?: string;
   avatar?: string;
+  roleId?: number;
+  roleName?: string;
 };
 
 export type Session = {
@@ -18,6 +20,7 @@ const secretKey = process.env.SESSION_SECRET_KEY!;
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export async function createSession(payload: Session) {
+  console.log('Payload before signing:', payload);
   const session = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()

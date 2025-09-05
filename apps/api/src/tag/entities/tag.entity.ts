@@ -10,5 +10,5 @@ export class Tag {
   name: string;
 
   @Field(() => [Post])
-  posts:Post[];
+  posts?: Post[];
 }

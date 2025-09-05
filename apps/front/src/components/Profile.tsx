@@ -1,4 +1,4 @@
-import { SessionUser } from "@/lib/session";
+import { getSession, SessionUser } from "@/lib/session";
 import { Popover } from "@radix-ui/react-popover";
 import { PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Avatar } from "@radix-ui/react-avatar";
@@ -7,6 +7,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   ListBulletIcon,
   PencilSquareIcon,
+  RectangleStackIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
@@ -14,7 +15,10 @@ import Link from "next/link";
 type Props = {
   user: SessionUser;
 };
-const Profile = ({ user }: Props) => {
+const Profile = async ({ user }: Props) => {
+  const session = await getSession();
+
+  console.log("ROLEEEEEEEE:", session?.user.roleName);
   return (
     <Popover>
       <PopoverTrigger>
@@ -38,14 +42,26 @@ const Profile = ({ user }: Props) => {
             <ArrowRightStartOnRectangleIcon className="w-4" />
             <span>Sign Out</span>
           </a>
-          <Link href="/user/create-post">
-            <PencilSquareIcon className="w-4 " />
-            <span>Create New Post</span>
-          </Link>
-          <Link href="/user/posts">
-            <ListBulletIcon className="w-4" />
-            <span>Posts</span>
-          </Link>
+          {(session?.user.roleName === "admin" ||
+            session?.user.roleName === "editor") && (
+            <>
+              <Link href="/user/create-post">
+                <PencilSquareIcon className="w-4 " />
+                <span>Create New Post</span>
+              </Link>
+              <Link href="/user/posts">
+                <RectangleStackIcon className="w-4" />
+                <span>My Posts</span>
+              </Link>
+            </>
+          )}
+
+          {session?.user.roleName === "admin" && (
+            <Link href="/admin/all-posts">
+              <ListBulletIcon className="w-4" />
+              <span>All Posts</span>
+            </Link>
+          )}
         </div>
       </PopoverContent>
     </Popover>

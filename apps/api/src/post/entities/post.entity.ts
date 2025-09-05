@@ -47,6 +47,6 @@ export class Post {
   @Field(() => [CommentEntity])
   comments: CommentEntity[];
 
-  @Field(() => Count)
-  _count: Count;
+  @Field(() => Count, { nullable: true })
+  _count?: Count;
 }

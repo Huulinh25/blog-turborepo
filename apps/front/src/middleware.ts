@@ -3,10 +3,12 @@ import { getSession } from "./lib/session";
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
-  if (!session || !session.user)
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+  if (request.nextUrl.pathname.startsWith('/admin') && session?.user.roleName !== "admin") {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+  return NextResponse.next();
 }
 
-export const config = { 
-  matcher: "/user/:path*",
+export const config = {
+  matcher: ['/admin/:path*'],
 };

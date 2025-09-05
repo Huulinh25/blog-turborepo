@@ -48,7 +48,12 @@ type Post {
   author: User!
   tags: [Tag!]!
   comments: [CommentEntity!]!
-  _count: Count!
+  _count: Count
+}
+
+type Role {
+  id: Int!
+  name: String!
 }
 
 type AuthPayload {
@@ -56,6 +61,7 @@ type AuthPayload {
   name: String!
   avatar: String
   accessToken: String!
+  role: Role
 }
 
 type Query {
