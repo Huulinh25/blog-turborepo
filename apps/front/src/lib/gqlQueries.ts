@@ -7,6 +7,7 @@ export const GET_POSTS = gql`
       title
       thumbnail
       content
+      published
       createdAt
       slug
       _count {

@@ -31,19 +31,19 @@ export async function getUserTags() {
 
 export const fetchPosts = async ({
   page,
-  pageSize,
+  pageSize = DEFAULT_PAGE_SIZE,
 }: {
   page?: number;
   pageSize?: number;
 } = {}): Promise<{ posts: Post[]; totalPosts: any }> => {
   const effectivePage = page || 1;
-  const effectivePageSize = pageSize || 10;
+  const effectivePageSize = pageSize || 12;
   const { skip, take } = transformTakeSkip({ page: effectivePage, pageSize: effectivePageSize });
 
-  console.log('Fetch posts params:', { skip, take }); // Debug
+  console.log('Fetch posts params:', { skip, take });
   const data = await fetchGraphQL(print(GET_POSTS), { skip, take });
-  console.log('Fetch posts data:', data); // Debug
-
+  console.log('Fetch posts data:', data);
+  
   return { posts: data.posts as Post[], totalPosts: data.postCount };
 };
 
@@ -55,7 +55,7 @@ export const fetchPostById = async (id: number) => {
 
 export async function fetchUserPosts({
   page,
-  pageSize,
+  pageSize = DEFAULT_PAGE_SIZE,
 }: {
   page?: number;
   pageSize: number;

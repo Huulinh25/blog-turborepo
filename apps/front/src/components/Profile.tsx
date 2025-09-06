@@ -18,7 +18,6 @@ type Props = {
 const Profile = async ({ user }: Props) => {
   const session = await getSession();
 
-  console.log("ROLEEEEEEEE:", session?.user.roleName);
   return (
     <Popover>
       <PopoverTrigger>

@@ -17,6 +17,14 @@ export class PostService {
     return await this.prisma.post.findMany({
       skip,
       take,
+      include: {
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
     });
   }
 
