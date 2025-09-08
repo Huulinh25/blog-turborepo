@@ -13,7 +13,7 @@ import {
 import { transformTakeSkip } from "../helpers";
 import { Post } from "../types/modelTypes";
 import { PostFormState } from "../types/formState";
-import { uploadThumbnail } from "../upload";
+import { uploadThumbnailViaAPI } from "./uploadActions";
 import { PostFormSchema } from "../ZodSchemas/postFornSchema";
 import { DEFAULT_PAGE_SIZE } from "../constants";
 
@@ -39,12 +39,13 @@ export const fetchPosts = async ({
   const effectivePage = page || 1;
   const effectivePageSize = pageSize || 12;
   const { skip, take } = transformTakeSkip({ page: effectivePage, pageSize: effectivePageSize });
-
-  console.log('Fetch posts params:', { skip, take });
-  const data = await fetchGraphQL(print(GET_POSTS), { skip, take });
-  console.log('Fetch posts data:', data);
-  
-  return { posts: data.posts as Post[], totalPosts: data.postCount };
+  try {
+    const data = await fetchGraphQL(print(GET_POSTS), { skip, take });
+    return { posts: data.posts as Post[], totalPosts: data.postCount };
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return { posts: [], totalPosts: 0 };
+  }
 };
 
 export const fetchPostById = async (id: number) => {
@@ -60,16 +61,24 @@ export async function fetchUserPosts({
   page?: number;
   pageSize: number;
 }) {
-  const { take, skip } = transformTakeSkip({ page, pageSize });
-  const data = await authFetchGraphQL(print(GET_USER_POSTS), {
-    take,
-    skip,
-  });
+  try {
+    const { take, skip } = transformTakeSkip({ page, pageSize });
+    const data = await authFetchGraphQL(print(GET_USER_POSTS), {
+      take,
+      skip,
+    });
 
-  return {
-    posts: data.getUserPosts as Post[],
-    totalPosts: data.userPostCount as number,
-  };
+    return {
+      posts: data.getUserPosts as Post[],
+      totalPosts: data.userPostCount as number,
+    };
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return {
+      posts: [],
+      totalPosts: 0,
+    };
+  }
 }
 
 export async function saveNewPost(
@@ -89,11 +98,25 @@ export async function saveNewPost(
   }
 
   let thumbnailUrl = "";
-  if (validatedFields.data.thumbnail)
-    thumbnailUrl = await uploadThumbnail(validatedFields.data.thumbnail);
+  if (validatedFields.data.thumbnail) {
+    try {
+      thumbnailUrl = await uploadThumbnailViaAPI(validatedFields.data.thumbnail);
+    } catch (uploadError) {
+      console.error("Thumbnail upload failed:", uploadError);
+      return {
+        data: Object.fromEntries(formData.entries()),
+        message: "Upload thumbnail failed. Please try again.",
+        ok: false,
+        userTags: [],
+        errors: { thumbnail: ["Failed to upload thumbnail"] },
+      } as unknown as PostFormState;
+    }
+  }
 
   const { postId, ...cleanData } = validatedFields.data;
-  const tags = formData.get("tags")?.toString().split(",") || [];
+  const tags = (formData.get("tags")?.toString().split(",") || [])
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
 
   try {
     const userTags = await fetchUserTags();
@@ -159,7 +182,7 @@ export async function updatePost(
 
   const { thumbnail, ...inputs } = validatedFields.data;
   let thumbnailUrl = "";
-  if (thumbnail) thumbnailUrl = await uploadThumbnail(thumbnail);
+  if (thumbnail) thumbnailUrl = await uploadThumbnailViaAPI(thumbnail);
 
   try {
     const userTags = await fetchUserTags();

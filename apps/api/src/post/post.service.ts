@@ -92,6 +92,9 @@ export class PostService {
     createPostInput: CreatePostInput;
     authorId: number;
   }) {
+    const cleanedTags = (createPostInput.tags || [])
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
     return await this.prisma.post.create({
       data: {
         ...createPostInput,
@@ -101,7 +104,7 @@ export class PostService {
           },
         },
         tags: {
-          connectOrCreate: createPostInput.tags.map((tag) => ({
+          connectOrCreate: cleanedTags.map((tag) => ({
             where: { name: tag },
             create: { name: tag },
           })),
@@ -124,6 +127,9 @@ export class PostService {
     if (!authorIdMatched) throw new UnauthorizedException();
   
     const { postId, tags, ...data } = updatePostInput;
+    const cleanedTags = (tags ?? [])
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
   
     return await this.prisma.post.update({
       where: { id: postId },
@@ -131,7 +137,7 @@ export class PostService {
         ...data,
         tags: {
           set: [],
-          connectOrCreate: (tags ?? []).map((tag) => ({
+          connectOrCreate: cleanedTags.map((tag) => ({
             where: { name: tag },
             create: { name: tag },
           })),
@@ -147,14 +153,35 @@ export class PostService {
 
     if (!authorIdMatched) throw new UnauthorizedException();
 
-    const result = await this.prisma.post.delete({
-      where: {
-        id: postId,
-        authorId: userId,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      // Disconnect all tags from the post (many-to-many join table)
+      await tx.post.update({
+        where: { id: postId },
+        data: {
+          tags: { set: [] },
+        },
+      });
+
+      // Delete dependent likes and comments
+      await tx.like.deleteMany({ where: { postId } });
+      await tx.comment.deleteMany({ where: { postId } });
+
+      // Finally delete the post
+      await tx.post.delete({
+        where: { id: postId, authorId: userId },
+      });
+
+      // Clean up orphan tags (tags not linked to any posts)
+      await tx.tag.deleteMany({
+        where: {
+          posts: {
+            none: {},
+          },
+        },
+      });
     });
 
-    return !!result;
+    return true;
   }
 
   async getAllTags(userId: number) {

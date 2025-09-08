@@ -11,6 +11,7 @@ import { LikeModule } from './like/like.module';
 import { UserModule } from './user/user.module';
 import { CommentModule } from './comment/comment.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -30,6 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     CommentModule,
     AuthModule,
+    UploadModule,
     ],
   controllers: [AppController],
   providers: [AppService],

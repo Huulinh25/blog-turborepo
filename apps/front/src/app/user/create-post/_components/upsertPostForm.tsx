@@ -72,7 +72,8 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
       const newTags = inputValue
         .split(",")
         .map((tag) => tag.trim())
-        .filter((tag) => tag && !selectedTags.includes(tag));
+        .filter((tag) => tag.length > 0)
+        .filter((tag) => !selectedTags.some((t) => t.toLowerCase() === tag.toLowerCase()));
       if (newTags.length > 0) {
         setSelectedTags([...selectedTags, ...newTags]);
         setInputValue("");
@@ -83,7 +84,7 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
 
   // Xử lý khi chọn gợi ý
   const handleSuggestionClick = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
+    if (!selectedTags.some((t) => t.toLowerCase() === tag.toLowerCase())) {
       setSelectedTags([...selectedTags, tag]);
       setInputValue("");
       setSuggestions([]);
@@ -151,9 +152,9 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
           )}
         </div>
         <div>
-          <Label htmlFor="tags">Tags</Label>
+          <Label htmlFor="tagsInput">Tags</Label>
           <Input
-            name="tags"
+            id="tagsInput"
             placeholder="Enter tags and press Enter to add"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}

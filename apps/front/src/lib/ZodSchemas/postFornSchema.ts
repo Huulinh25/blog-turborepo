@@ -12,7 +12,11 @@ export const PostFormSchema = z.object({
     .min(1)
     .refine((value) => value.split(",").every((tag) => tag.trim() !== ""))
     .transform((value) => value.split(",")),
-  thumbnail: z.instanceof(File).optional(),
+  // Treat empty file inputs as undefined so updates without new image don't try to upload
+  thumbnail: z
+    .any()
+    .transform((v) => (v instanceof File && v.size > 0 ? v : undefined))
+    .optional(),
   published: z.string().transform((value) => value === "on"),
 });
 

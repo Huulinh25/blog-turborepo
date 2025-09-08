@@ -45,6 +45,50 @@ export const authFetchGraphQL = async (query: string, variables = {}) => {
   return result.data;
 };
 
+export const authFetchGraphQLWithFile = async (query: string, variables: any) => {
+  const session = await getSession();
+  
+  // Tạo FormData cho file upload
+  const formData = new FormData();
+  
+  // Thêm query và variables vào FormData
+  formData.append('operations', JSON.stringify({
+    query,
+    variables: {
+      ...variables,
+      file: null, // File sẽ được map sau
+    }
+  }));
+  
+  // Map file với GraphQL variable
+  const fileMap: Record<string, string[]> = {};
+  Object.keys(variables).forEach((key, index) => {
+    if (variables[key] instanceof File) {
+      const mapKey = String(index);
+      fileMap[mapKey] = [`variables.${key}`];
+      formData.append(mapKey, variables[key]);
+    }
+  });
+  
+  formData.append('map', JSON.stringify(fileMap));
+  
+  const response = await fetch(`${BACKEND_URL}/graphql`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${session?.accessToken}`,
+    },
+    body: formData,
+  });
+
+  const result = await response.json();
+  if (result.errors) {
+    console.error("GraphQL errors:", result.errors);
+    throw new Error("Failed to upload file");
+  }
+
+  return result.data;
+};
+
 // Hàm để lấy tags của người dùng
 export const fetchUserTags = async (): Promise<string[]> => {
   const GET_USER_TAGS = `

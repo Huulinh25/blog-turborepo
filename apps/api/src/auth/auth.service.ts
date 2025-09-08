@@ -23,7 +23,10 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('User Not Found');
 
-    const passwordMatched = await verify(user.password, password);
+    if (!user.password) {
+      throw new UnauthorizedException('Invalid Credentials!');
+    }
+    const passwordMatched = await verify(user.password as string, password);
 
     if (!passwordMatched)
       throw new UnauthorizedException('Invalid Credentials!');
@@ -40,10 +43,9 @@ export class AuthService {
   async login(user: User) {
     const { accessToken } = await this.generateToken(user.id);
 
-    const userWithRole = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: { role: true },
-    });
+    const userRole = user.roleId
+      ? await this.prisma.role.findUnique({ where: { id: user.roleId } })
+      : null;
 
     // console.log('User with role in login:', userWithRole);
     return {
@@ -51,7 +53,7 @@ export class AuthService {
       name: user.name,
       avatar: user.avatar,
       accessToken,
-      role: userWithRole?.role ? { id: userWithRole.role.id, name: userWithRole.role.name } : null,
+      role: userRole ? { id: userRole.id, name: userRole.name } : null,
     };
   }
 
