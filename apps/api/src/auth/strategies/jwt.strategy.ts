@@ -4,12 +4,14 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthJwtPayload } from '../types/auth-jwtPayload';
 import { AuthService } from '../auth.service';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         private configService: ConfigService,
         private authService: AuthService,
+        private prismaService: PrismaService,
     ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

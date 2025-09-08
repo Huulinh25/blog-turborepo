@@ -7,6 +7,9 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { DEFAULT_PAGE_SIZE } from 'src/constants';
 import { Tag } from 'src/tag/entities/tag.entity';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RoleEnum } from 'src/auth/enums/role.enum';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -60,7 +63,8 @@ export class PostResolver {
     return this.postService.userPostCount(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleEnum.Admin, RoleEnum.Editor)
   @Mutation(() => Post)
   createPost(
     @Context() context,
@@ -71,7 +75,8 @@ export class PostResolver {
     return this.postService.create({ createPostInput, authorId });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleEnum.Admin, RoleEnum.Editor)
   @Mutation(() => Post)
   updatePost(
     @Context() context,
@@ -82,7 +87,8 @@ export class PostResolver {
     return this.postService.update({ userId, updatePostInput });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleEnum.Admin, RoleEnum.Editor)
   @Mutation(() => Boolean)
   deletePost(
     @Context() context,
