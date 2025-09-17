@@ -8,7 +8,8 @@ import { useActionState } from "react";
 type Props = {
   post: Post;
 };
-const UpdatePostContainer = ({ post }: Props) => {
+const UpdateAdminPostContainer = ({ post }: Props) => {
+  // console.log({ post });
   const [state, action] = useActionState(updatePost, {
     data: {
       postId: post.id,
@@ -22,4 +23,4 @@ const UpdatePostContainer = ({ post }: Props) => {
   return <UpsertPostForm state={state} formAction={action} />;
 };
 
-export default UpdatePostContainer;
+export default UpdateAdminPostContainer;

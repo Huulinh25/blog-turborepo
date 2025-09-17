@@ -49,6 +49,12 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
       const tags = state.data.tags.split(",");
       setSelectedTags(tags);
     }
+    // Khi create thành công (server action trả về ok=true và không có data), reset form UI
+    if (state?.ok && !state?.data) {
+      setSelectedTags([]);
+      setInputValue("");
+      setImageUrl("");
+    }
   }, [state]);
 
   // Cập nhật gợi ý khi người dùng nhập
@@ -104,6 +110,11 @@ const UpsertPostForm = ({ state, formAction }: Props) => {
         className="flex flex-col gap-5 [&>div>label]:text-slate-500 [&>div>input]:transition [&>div>textarea]:transition"
       >
         <input hidden name="postId" defaultValue={state?.data?.postId} />
+        <input
+          hidden
+          name="previousThumbnailUrl"
+          defaultValue={state?.data?.previousThumbnailUrl}
+        />
         <div>
           <Label htmlFor="title">Title</Label>
           <Input

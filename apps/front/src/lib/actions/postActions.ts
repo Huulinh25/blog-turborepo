@@ -21,7 +21,6 @@ import { DEFAULT_PAGE_SIZE } from "../constants";
 export async function getUserTags() {
   try {
     const tags = await fetchUserTags();
-    // console.log("User tags fetched from server action:", tags); // In ra console
     return tags;
   } catch (error) {
     console.error("Error fetching user tags in server action:", error);
@@ -145,7 +144,6 @@ export async function saveNewPost(
     }
 
     return {
-      data: Object.fromEntries(formData.entries()),
       message: "Post created successfully",
       ok: true,
       userTags,
@@ -186,7 +184,6 @@ export async function updatePost(
 
   try {
     const userTags = await fetchUserTags();
-    console.log("Fetched userTags for update:", userTags);
     const data = await authFetchGraphQL(print(UPDATE_POST_MUTATION), {
       input: {
         ...inputs,
@@ -196,6 +193,8 @@ export async function updatePost(
 
     if (data) {
       return {
+        // Khi cập nhật thành công, giữ nguyên giá trị form hiện tại
+        data: Object.fromEntries(formData.entries()),
         message: "Success! The Post Updated",
         ok: true,
         userTags,
