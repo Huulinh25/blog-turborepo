@@ -33,11 +33,11 @@ const PostListItem = ({ post }: Props) => {
         {post.published && <CheckIcon className="w-5" />}
       </div>
       <div className="flex justify-center items-center">
-        {post._count.likes}
+        {post._count?.likes}
       </div>
 
       <div className="flex justify-center items-center">
-        {post._count.comments}
+        {post._count?.comments}
       </div>
       <PostActions postId={post.id} />
     </div>
